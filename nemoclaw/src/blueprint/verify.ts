@@ -79,13 +79,18 @@ function computeDirectoryDigest(dirPath: string): string {
 }
 
 function collectFiles(dirPath: string, prefix = ""): string[] {
-  const entries = readdirSync(dirPath);
+  const entries = readdirSync(dirPath, { withFileTypes: true });
   const files: string[] = [];
   for (const entry of entries) {
-    const fullPath = join(dirPath, entry);
-    const relativePath = prefix ? `${prefix}/${entry}` : entry;
-    const stat = statSync(fullPath);
-    if (stat.isDirectory()) {
+    const fullPath = join(dirPath, entry.name);
+    const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+
+    let isDir = entry.isDirectory();
+    if (entry.isSymbolicLink()) {
+      isDir = statSync(fullPath).isDirectory();
+    }
+
+    if (isDir) {
       files.push(...collectFiles(fullPath, relativePath));
     } else {
       files.push(relativePath);
