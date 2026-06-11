@@ -251,9 +251,10 @@ class SearchInterface {
                             class="enhanced-search-input"
                             placeholder="${this.options.placeholder}"
                             autofocus
+                            aria-label="Search documentation"
                         >
-                        <button class="enhanced-search-close" title="Close search">
-                            <i class="fa-solid fa-xmark"></i>
+                        <button class="enhanced-search-close" title="Close search" aria-label="Close search">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                         </button>
                     </div>
                     <div class="enhanced-search-stats"></div>
