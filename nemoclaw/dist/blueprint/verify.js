@@ -55,13 +55,16 @@ function computeDirectoryDigest(dirPath) {
     return hash.digest("hex");
 }
 function collectFiles(dirPath, prefix = "") {
-    const entries = (0, node_fs_1.readdirSync)(dirPath);
+    const entries = (0, node_fs_1.readdirSync)(dirPath, { withFileTypes: true });
     const files = [];
     for (const entry of entries) {
-        const fullPath = (0, node_path_1.join)(dirPath, entry);
-        const relativePath = prefix ? `${prefix}/${entry}` : entry;
-        const stat = (0, node_fs_1.statSync)(fullPath);
-        if (stat.isDirectory()) {
+        const fullPath = (0, node_path_1.join)(dirPath, entry.name);
+        const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+        let isDir = entry.isDirectory();
+        if (entry.isSymbolicLink()) {
+            isDir = (0, node_fs_1.statSync)(fullPath).isDirectory();
+        }
+        if (isDir) {
             files.push(...collectFiles(fullPath, relativePath));
         }
         else {

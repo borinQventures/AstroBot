@@ -1,0 +1,3 @@
+## 2024-06-11 - Node.js `readdirSync` optimization edge cases
+**Learning:** `readdirSync` with `{ withFileTypes: true }` returns a `fs.Dirent` object. A `fs.Dirent` object has a `.isSymbolicLink()` method. If a directory entry is a symlink, `.isDirectory()` on the `Dirent` returns false, so you need to fall back to `statSync(fullPath).isDirectory()` to determine if the target of the symlink is a directory if you need to traverse into it.
+**Action:** When using `{ withFileTypes: true }` to optimize `statSync` calls, explicitly handle symlinks with `entry.isSymbolicLink()` and check their underlying target type if traversing logic depends on it.

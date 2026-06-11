@@ -140,9 +140,10 @@ function showConfig(config: NemoClawOnboardConfig, logger: PluginLogger): void {
   logger.info(`  Onboarded:   ${config.onboardedAt}`);
 }
 
-async function promptEndpoint(
-  ollama: { installed: boolean; running: boolean },
-): Promise<EndpointType> {
+async function promptEndpoint(ollama: {
+  installed: boolean;
+  running: boolean;
+}): Promise<EndpointType> {
   const options = [
     {
       label: "NVIDIA Build (build.nvidia.com)",
@@ -221,9 +222,7 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
     }
     const ep = opts.endpoint as EndpointType;
     if (!SUPPORTED_ENDPOINT_TYPES.includes(ep)) {
-      logger.warn(
-        `Note: '${ep}' is experimental and may not work reliably.`,
-      );
+      logger.warn(`Note: '${ep}' is experimental and may not work reliably.`);
     }
     endpointType = ep;
   } else {
