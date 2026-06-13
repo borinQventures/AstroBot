@@ -155,19 +155,25 @@ function loadConfigDocument(configPath: string): OpenClawConfigDocument | null {
 function collectSymlinkPaths(rootPath: string): string[] {
   const symlinks: string[] = [];
 
+  const stat = lstatSync(rootPath);
+  if (stat.isSymbolicLink()) {
+    symlinks.push(".");
+    return symlinks;
+  }
+  if (!stat.isDirectory()) {
+    return symlinks;
+  }
+
   function walk(currentPath: string, relativePath: string): void {
-    const stat = lstatSync(currentPath);
-    if (stat.isSymbolicLink()) {
-      symlinks.push(relativePath || ".");
-      return;
-    }
-    if (!stat.isDirectory()) {
-      return;
-    }
-    for (const entry of readdirSync(currentPath)) {
-      const nextPath = path.join(currentPath, entry);
-      const nextRelative = relativePath ? path.join(relativePath, entry) : entry;
-      walk(nextPath, nextRelative);
+    // ⚡ Bolt: Optimize I/O overhead by using withFileTypes
+    // This avoids calling lstatSync for every single file/directory during traversal
+    for (const entry of readdirSync(currentPath, { withFileTypes: true })) {
+      const nextRelative = relativePath ? path.join(relativePath, entry.name) : entry.name;
+      if (entry.isSymbolicLink()) {
+        symlinks.push(nextRelative);
+      } else if (entry.isDirectory()) {
+        walk(path.join(currentPath, entry.name), nextRelative);
+      }
     }
   }
 
