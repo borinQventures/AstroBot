@@ -52,6 +52,11 @@ export async function cliEject(opts: EjectOptions): Promise<void> {
     logger.info(`  3. Restore ~/.openclaw from snapshot: ${snapshotPath}`);
     logger.info("  4. Clear NemoClaw state");
     logger.info("");
+    if (!process.stdin.isTTY || !process.stdout.isTTY) {
+      logger.info("Run with --confirm to proceed, or cancel now.");
+      return;
+    }
+
     const proceed = await promptConfirm("Proceed with eject?", false);
     if (!proceed) {
       logger.info("Eject cancelled.");
