@@ -86,8 +86,17 @@ function collectFiles(dirPath: string, prefix = ""): string[] {
     const fullPath = join(dirPath, entry.name);
     const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
 
+    const typeKnown =
+      entry.isFile() ||
+      entry.isDirectory() ||
+      entry.isSymbolicLink() ||
+      entry.isBlockDevice() ||
+      entry.isCharacterDevice() ||
+      entry.isFIFO() ||
+      entry.isSocket();
+
     let isDir = entry.isDirectory();
-    if (entry.isSymbolicLink()) {
+    if (entry.isSymbolicLink() || !typeKnown) {
       isDir = statSync(fullPath).isDirectory();
     }
 
