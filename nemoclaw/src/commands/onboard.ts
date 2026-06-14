@@ -186,6 +186,10 @@ function execOpenShell(args: string[]): string {
   });
 }
 
+function redactError(message: string): string {
+  return message.replace(/(?:[A-Z0-9_]*API_KEY|--credential)[= ]\S+/gi, "****");
+}
+
 export async function cliOnboard(opts: OnboardOptions): Promise<void> {
   const { logger } = opts;
   const nonInteractive = isNonInteractive(opts);
@@ -408,11 +412,11 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
           updateErr instanceof Error && "stderr" in updateErr
             ? String((updateErr as { stderr: unknown }).stderr)
             : "";
-        logger.error(`Failed to update provider: ${updateStderr || String(updateErr)}`);
+        logger.error(redactError(`Failed to update provider: ${updateStderr || String(updateErr)}`));
         return;
       }
     } else {
-      logger.error(`Failed to create provider: ${stderr || String(err)}`);
+      logger.error(redactError(`Failed to create provider: ${stderr || String(err)}`));
       return;
     }
   }
@@ -424,7 +428,7 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
   } catch (err) {
     const stderr =
       err instanceof Error && "stderr" in err ? String((err as { stderr: unknown }).stderr) : "";
-    logger.error(`Failed to set inference route: ${stderr || String(err)}`);
+    logger.error(redactError(`Failed to set inference route: ${stderr || String(err)}`));
     return;
   }
 
