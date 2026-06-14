@@ -14,9 +14,15 @@ export async function promptInput(question: string, defaultValue?: string): Prom
   const rl = createInterface({ input: stdin, output: stdout });
   const suffix = defaultValue ? ` [${defaultValue}]` : "";
   try {
-    const answer = await rl.question(`${question}${suffix}: `);
-    const trimmed = answer.trim();
-    return trimmed || defaultValue || "";
+    for (;;) {
+      const answer = await rl.question(`${question}${suffix}: `);
+      const trimmed = answer.trim();
+
+      if (trimmed) return trimmed;
+      if (defaultValue) return defaultValue;
+
+      console.log("  A value is required. Please try again.");
+    }
   } finally {
     rl.close();
   }
