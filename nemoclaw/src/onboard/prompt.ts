@@ -50,7 +50,7 @@ export async function promptSelect(
   try {
     console.log(`\n${question}\n`);
     for (let i = 0; i < options.length; i++) {
-      const marker = i === defaultIndex ? "*" : " ";
+      const marker = i === defaultIndex ? "◉" : "◯";
       const optHint = options[i].hint;
       const hint = optHint ? `  ${optHint}` : "";
       console.log(`  ${marker} ${String(i + 1)}. ${options[i].label}${hint}`);
