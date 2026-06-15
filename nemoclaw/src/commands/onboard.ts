@@ -12,6 +12,13 @@ import {
 import { promptInput, promptConfirm, promptSelect } from "../onboard/prompt.js";
 import { validateApiKey, maskApiKey } from "../onboard/validate.js";
 
+function sanitizeError(msg: string, secret: string): string {
+  if (!secret || secret.length < 3) return msg;
+  const masked = maskApiKey(secret);
+  // Replace all occurrences of the literal secret with the masked version
+  return msg.split(secret).join(masked);
+}
+
 export interface OnboardOptions {
   apiKey?: string;
   endpoint?: string;
@@ -408,11 +415,13 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
           updateErr instanceof Error && "stderr" in updateErr
             ? String((updateErr as { stderr: unknown }).stderr)
             : "";
-        logger.error(`Failed to update provider: ${updateStderr || String(updateErr)}`);
+        const msg = updateStderr || String(updateErr);
+        logger.error(`Failed to update provider: ${sanitizeError(msg, apiKey)}`);
         return;
       }
     } else {
-      logger.error(`Failed to create provider: ${stderr || String(err)}`);
+      const msg = stderr || String(err);
+      logger.error(`Failed to create provider: ${sanitizeError(msg, apiKey)}`);
       return;
     }
   }
@@ -424,7 +433,8 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
   } catch (err) {
     const stderr =
       err instanceof Error && "stderr" in err ? String((err as { stderr: unknown }).stderr) : "";
-    logger.error(`Failed to set inference route: ${stderr || String(err)}`);
+    const msg = stderr || String(err);
+    logger.error(`Failed to set inference route: ${sanitizeError(msg, apiKey)}`);
     return;
   }
 
