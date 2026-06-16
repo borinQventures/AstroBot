@@ -49,11 +49,17 @@ export async function promptSelect(
   const rl = createInterface({ input: stdin, output: stdout });
   try {
     console.log(`\n${question}\n`);
+
+    const maxLabelLen = options.reduce((max, opt) => Math.max(max, opt.label.length), 0);
+    const maxNumLen = String(options.length).length;
+
     for (let i = 0; i < options.length; i++) {
       const marker = i === defaultIndex ? "*" : " ";
+      const numStr = String(i + 1).padStart(maxNumLen, " ");
       const optHint = options[i].hint;
+      const paddedLabel = optHint ? options[i].label.padEnd(maxLabelLen) : options[i].label;
       const hint = optHint ? `  ${optHint}` : "";
-      console.log(`  ${marker} ${String(i + 1)}. ${options[i].label}${hint}`);
+      console.log(`  ${marker} ${numStr}. ${paddedLabel}${hint}`);
     }
     console.log("");
 
