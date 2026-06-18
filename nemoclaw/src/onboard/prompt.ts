@@ -32,10 +32,14 @@ export async function promptConfirm(question: string, defaultYes = true): Promis
   const rl = createInterface({ input: stdin, output: stdout });
   const hint = defaultYes ? "(Y/n)" : "(y/N)";
   try {
-    const answer = await rl.question(`${question} ${hint}: `);
-    const trimmed = answer.trim().toLowerCase();
-    if (!trimmed) return defaultYes;
-    return trimmed === "y" || trimmed === "yes";
+    for (;;) {
+      const answer = await rl.question(`${question} ${hint}: `);
+      const trimmed = answer.trim().toLowerCase();
+      if (!trimmed) return defaultYes;
+      if (trimmed === "y" || trimmed === "yes") return true;
+      if (trimmed === "n" || trimmed === "no") return false;
+      console.log("  Please answer 'y' or 'n'.");
+    }
   } finally {
     rl.close();
   }
