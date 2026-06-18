@@ -155,23 +155,25 @@ function loadConfigDocument(configPath: string): OpenClawConfigDocument | null {
 function collectSymlinkPaths(rootPath: string): string[] {
   const symlinks: string[] = [];
 
-  function walk(currentPath: string, relativePath: string): void {
-    const stat = lstatSync(currentPath);
-    if (stat.isSymbolicLink()) {
+  // Bolt ⚡: Optimize recursive directory traversal by using withFileTypes
+  // This avoids calling lstatSync for every single file in the directory tree.
+  function walk(currentPath: string, relativePath: string, isSymlink: boolean, isDir: boolean): void {
+    if (isSymlink) {
       symlinks.push(relativePath || ".");
       return;
     }
-    if (!stat.isDirectory()) {
+    if (!isDir) {
       return;
     }
-    for (const entry of readdirSync(currentPath)) {
-      const nextPath = path.join(currentPath, entry);
-      const nextRelative = relativePath ? path.join(relativePath, entry) : entry;
-      walk(nextPath, nextRelative);
+    for (const entry of readdirSync(currentPath, { withFileTypes: true })) {
+      const nextPath = path.join(currentPath, entry.name);
+      const nextRelative = relativePath ? path.join(relativePath, entry.name) : entry.name;
+      walk(nextPath, nextRelative, entry.isSymbolicLink(), entry.isDirectory());
     }
   }
 
-  walk(rootPath, "");
+  const rootStat = lstatSync(rootPath);
+  walk(rootPath, "", rootStat.isSymbolicLink(), rootStat.isDirectory());
   return symlinks.sort();
 }
 
