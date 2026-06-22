@@ -505,7 +505,7 @@ class SearchPageManager {
                     <div class="active-filters-display mb-2">
                         <small class="text-muted">Active filters: </small>
                         ${activeMetadataFilters.map(filter => `<span class="active-filter-badge">${filter}</span>`).join(' ')}
-                        <button class="btn btn-outline-secondary btn-sm ms-2" onclick="window.searchPageManager.clearMetadataFilters()">
+                        <button class="btn btn-outline-secondary btn-sm ms-2" onclick="window.searchPageManager.clearMetadataFilters()" aria-label="Clear metadata filters">
                             <i class="fa-solid fa-xmark"></i> Clear metadata filters
                         </button>
                     </div>
@@ -1152,7 +1152,7 @@ class SearchPageManager {
                 </div>
                 ${filtersActive ? `
                     <div class="mt-3">
-                        <button onclick="document.getElementById('clear-filters').click()" class="btn btn-outline-secondary btn-sm">
+                        <button onclick="document.getElementById('clear-filters').click()" class="btn btn-outline-secondary btn-sm" aria-label="Clear filters">
                             <i class="fas fa-times"></i> Clear Filters
                         </button>
                     </div>
