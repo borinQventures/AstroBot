@@ -164,10 +164,17 @@ function collectSymlinkPaths(rootPath: string): string[] {
     if (!stat.isDirectory()) {
       return;
     }
-    for (const entry of readdirSync(currentPath)) {
-      const nextPath = path.join(currentPath, entry);
-      const nextRelative = relativePath ? path.join(relativePath, entry) : entry;
-      walk(nextPath, nextRelative);
+
+    // Optimization: Use withFileTypes to avoid lstatSync on every file/dir
+    for (const entry of readdirSync(currentPath, { withFileTypes: true })) {
+      const nextPath = path.join(currentPath, entry.name);
+      const nextRelative = relativePath ? path.join(relativePath, entry.name) : entry.name;
+
+      if (entry.isSymbolicLink()) {
+        symlinks.push(nextRelative);
+      } else if (entry.isDirectory()) {
+        walk(nextPath, nextRelative);
+      }
     }
   }
 
@@ -176,7 +183,10 @@ function collectSymlinkPaths(rootPath: string): string[] {
 }
 
 function slugify(input: string): string {
-  const slug = input.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const slug = input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
   return slug || "root";
 }
 
@@ -416,8 +426,11 @@ export function detectHostOpenClaw(env: NodeJS.ProcessEnv = process.env): HostOp
     typeof config["agents"] === "object" &&
     config["agents"] &&
     !Array.isArray(config["agents"]) &&
-    typeof ((config["agents"] as Record<string, unknown>)["defaults"] as Record<string, unknown> | undefined)
-      ?.["workspace"] === "string"
+    typeof (
+      (config["agents"] as Record<string, unknown>)["defaults"] as
+        | Record<string, unknown>
+        | undefined
+    )?.["workspace"] === "string"
       ? resolveUserPath(
           (
             ((config["agents"] as Record<string, unknown>)["defaults"] as Record<string, unknown>)[
@@ -431,7 +444,9 @@ export function detectHostOpenClaw(env: NodeJS.ProcessEnv = process.env): HostOp
   const extensionsDir = existsSync(path.join(stateDir, "extensions"))
     ? path.join(stateDir, "extensions")
     : null;
-  const skillsDir = existsSync(path.join(stateDir, "skills")) ? path.join(stateDir, "skills") : null;
+  const skillsDir = existsSync(path.join(stateDir, "skills"))
+    ? path.join(stateDir, "skills")
+    : null;
   const hooksDir = existsSync(path.join(stateDir, "hooks")) ? path.join(stateDir, "hooks") : null;
 
   if (existsSync(workspaceDir)) {
@@ -476,7 +491,9 @@ function writeSnapshotManifest(snapshotDir: string, manifest: SnapshotManifest):
 }
 
 function readSnapshotManifest(snapshotDir: string): SnapshotManifest {
-  return JSON.parse(readFileSync(path.join(snapshotDir, "snapshot.json"), "utf-8")) as SnapshotManifest;
+  return JSON.parse(
+    readFileSync(path.join(snapshotDir, "snapshot.json"), "utf-8"),
+  ) as SnapshotManifest;
 }
 
 function resolveConfigSourcePath(manifest: SnapshotManifest, snapshotDir: string): string {
@@ -486,7 +503,11 @@ function resolveConfigSourcePath(manifest: SnapshotManifest, snapshotDir: string
   return path.join(snapshotDir, "openclaw", "openclaw.json");
 }
 
-function setConfigValue(document: Record<string, unknown>, configPath: string, value: string): void {
+function setConfigValue(
+  document: Record<string, unknown>,
+  configPath: string,
+  value: string,
+): void {
   const tokens = configPath.match(/[^.[\]]+/g);
   if (!tokens || tokens.length === 0) {
     throw new Error(`Invalid config path: ${configPath}`);
@@ -537,7 +558,7 @@ function prepareSandboxState(snapshotDir: string, manifest: SnapshotManifest): s
   copyDirectory(path.join(snapshotDir, "openclaw"), preparedStateDir);
 
   const configSourcePath = resolveConfigSourcePath(manifest, snapshotDir);
-  const config = existsSync(configSourcePath) ? loadConfigDocument(configSourcePath) ?? {} : {};
+  const config = existsSync(configSourcePath) ? (loadConfigDocument(configSourcePath) ?? {}) : {};
 
   for (const root of manifest.externalRoots) {
     for (const binding of root.bindings) {
