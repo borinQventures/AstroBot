@@ -373,6 +373,11 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
   logger.info("");
   logger.info("Applying configuration...");
 
+  const sanitizeOutput = (msg: string) => {
+    if (!requiresApiKey) return msg;
+    return msg.split(apiKey).join(maskApiKey(apiKey));
+  };
+
   // 7a: Create/update provider
   try {
     execOpenShell([
@@ -408,11 +413,13 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
           updateErr instanceof Error && "stderr" in updateErr
             ? String((updateErr as { stderr: unknown }).stderr)
             : "";
-        logger.error(`Failed to update provider: ${updateStderr || String(updateErr)}`);
+        const msg = updateStderr || String(updateErr);
+        logger.error(`Failed to update provider: ${sanitizeOutput(msg)}`);
         return;
       }
     } else {
-      logger.error(`Failed to create provider: ${stderr || String(err)}`);
+      const msg = stderr || String(err);
+      logger.error(`Failed to create provider: ${sanitizeOutput(msg)}`);
       return;
     }
   }
@@ -424,7 +431,8 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
   } catch (err) {
     const stderr =
       err instanceof Error && "stderr" in err ? String((err as { stderr: unknown }).stderr) : "";
-    logger.error(`Failed to set inference route: ${stderr || String(err)}`);
+    const msg = stderr || String(err);
+    logger.error(`Failed to set inference route: ${sanitizeOutput(msg)}`);
     return;
   }
 
