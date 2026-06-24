@@ -156,22 +156,26 @@ function collectSymlinkPaths(rootPath: string): string[] {
   const symlinks: string[] = [];
 
   function walk(currentPath: string, relativePath: string): void {
-    const stat = lstatSync(currentPath);
-    if (stat.isSymbolicLink()) {
-      symlinks.push(relativePath || ".");
-      return;
-    }
-    if (!stat.isDirectory()) {
-      return;
-    }
-    for (const entry of readdirSync(currentPath)) {
-      const nextPath = path.join(currentPath, entry);
-      const nextRelative = relativePath ? path.join(relativePath, entry) : entry;
-      walk(nextPath, nextRelative);
+    // Optimization: Use withFileTypes to avoid lstatSync per file
+    for (const entry of readdirSync(currentPath, { withFileTypes: true })) {
+      const nextPath = path.join(currentPath, entry.name);
+      const nextRelative = relativePath ? path.join(relativePath, entry.name) : entry.name;
+
+      if (entry.isSymbolicLink()) {
+        symlinks.push(nextRelative);
+      } else if (entry.isDirectory()) {
+        walk(nextPath, nextRelative);
+      }
     }
   }
 
-  walk(rootPath, "");
+  const rootStat = lstatSync(rootPath);
+  if (rootStat.isSymbolicLink()) {
+    symlinks.push(".");
+  } else if (rootStat.isDirectory()) {
+    walk(rootPath, "");
+  }
+
   return symlinks.sort();
 }
 
