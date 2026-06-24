@@ -369,6 +369,11 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
     }
   }
 
+  function sanitizeErrorMsg(msg: string, secret: string): string {
+    if (!secret) return msg;
+    return msg.split(secret).join(maskApiKey(secret));
+  }
+
   // Step 8: Apply
   logger.info("");
   logger.info("Applying configuration...");
@@ -408,11 +413,15 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
           updateErr instanceof Error && "stderr" in updateErr
             ? String((updateErr as { stderr: unknown }).stderr)
             : "";
-        logger.error(`Failed to update provider: ${updateStderr || String(updateErr)}`);
+        const msg = updateStderr || String(updateErr);
+        // Security: Sanitize error messages to avoid exposing the raw API key in logs
+        logger.error(`Failed to update provider: ${sanitizeErrorMsg(msg, apiKey)}`);
         return;
       }
     } else {
-      logger.error(`Failed to create provider: ${stderr || String(err)}`);
+      const msg = stderr || String(err);
+      // Security: Sanitize error messages to avoid exposing the raw API key in logs
+      logger.error(`Failed to create provider: ${sanitizeErrorMsg(msg, apiKey)}`);
       return;
     }
   }
@@ -424,7 +433,9 @@ export async function cliOnboard(opts: OnboardOptions): Promise<void> {
   } catch (err) {
     const stderr =
       err instanceof Error && "stderr" in err ? String((err as { stderr: unknown }).stderr) : "";
-    logger.error(`Failed to set inference route: ${stderr || String(err)}`);
+    const msg = stderr || String(err);
+    // Security: Sanitize error messages to avoid exposing the raw API key in logs
+    logger.error(`Failed to set inference route: ${sanitizeErrorMsg(msg, apiKey)}`);
     return;
   }
 
