@@ -677,6 +677,11 @@ class SearchPageManager {
             return;
         }
 
+        const announcer = document.getElementById('search-announcer');
+        if (announcer) {
+            announcer.textContent = \`Found \${results.length} result\${results.length !== 1 ? 's' : ''} for "\${this.currentQuery}"\`;
+        }
+
         const resultsHtml = results.map((result, index) => this.renderResult(result, index)).join('');
         const resultBreakdown = this.getResultBreakdown(results);
 
@@ -1139,6 +1144,11 @@ class SearchPageManager {
         const suggestionText = filtersActive
             ? 'Try clearing some filters or using different keywords'
             : 'Try different keywords or check your spelling';
+
+        const announcer = document.getElementById('search-announcer');
+        if (announcer) {
+            announcer.textContent = \`No results found for "\${this.currentQuery}"\`;
+        }
 
         this.resultsContainer.innerHTML = `
             <div class="no-results text-center py-4">
