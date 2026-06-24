@@ -1,0 +1,3 @@
+## 2026-06-24 - File System Iteration Bottlenecks
+**Learning:** During large directory migrations (like entire workspaces), recursively calling `lstatSync` on every single file within `readdirSync` created a massive performance bottleneck. The overhead of native `stat` syscalls adds up very quickly when scanning thousands of files.
+**Action:** Always prefer `readdirSync(dir, { withFileTypes: true })` over `readdirSync` + `lstatSync`. The `Dirent` object provides `isSymbolicLink()` and `isDirectory()` essentially for free during the readdir phase, cutting directory traversal time nearly in half.
