@@ -62,7 +62,7 @@ class ResultRenderer {
                     </div>
                 </div>
                 <div class="search-result-score">
-                    <i class="fa-solid fa-arrow-right"></i>
+                    <i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
                 </div>
             </div>
         `;
@@ -110,7 +110,7 @@ class ResultRenderer {
     renderNoResults(query) {
         return `
             <div class="search-no-results">
-                <i class="fa-solid fa-search-minus"></i>
+                <i aria-hidden="true" class="fa-solid fa-search-minus"></i>
                 <p>No results found for "<strong>${this.utils.escapeHtml(query)}</strong>"</p>
                 <div class="search-suggestions">
                     <strong>Try:</strong>
@@ -237,7 +237,7 @@ class ResultRenderer {
         if (container) {
             container.innerHTML = `
                 <div class="search-loading">
-                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <i aria-hidden="true" class="fa-solid fa-spinner fa-spin"></i>
                     <p>Searching...</p>
                 </div>
             `;
@@ -251,7 +251,7 @@ class ResultRenderer {
         if (container) {
             container.innerHTML = `
                 <div class="search-error">
-                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <i aria-hidden="true" class="fa-solid fa-exclamation-triangle"></i>
                     <p>${this.utils.escapeHtml(message)}</p>
                 </div>
             `;

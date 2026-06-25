@@ -97,7 +97,7 @@ class SearchPageManager {
         const searchInputWrapper = document.createElement('div');
         searchInputWrapper.className = 'search-input-wrapper';
         searchInputWrapper.innerHTML = `
-            <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+            <i aria-hidden="true" class="fa-solid fa-magnifying-glass search-input-icon"></i>
         `;
         this.searchInput.parentNode.insertBefore(searchInputWrapper, this.searchInput);
         searchInputWrapper.appendChild(this.searchInput);
@@ -150,19 +150,19 @@ class SearchPageManager {
         return `
             <div class="filter-header">
                 <div class="filter-header-left">
-                    <i class="fa-solid fa-sliders filter-header-icon"></i>
+                    <i aria-hidden="true" class="fa-solid fa-sliders filter-header-icon"></i>
                     <span class="filter-header-title">Filters</span>
                     ${activeCount > 0 ? `<span class="active-filter-count">${activeCount}</span>` : ''}
                 </div>
                 <button id="clear-filters" class="filter-clear-btn ${activeCount === 0 ? 'hidden' : ''}" aria-label="Clear all filters">
-                    <i class="fa-solid fa-xmark"></i>
+                    <i aria-hidden="true" class="fa-solid fa-xmark"></i>
                     <span>Clear all</span>
                 </button>
             </div>
             <div class="filter-grid">
                 <div class="filter-group">
                     <label class="filter-label" for="topic-filter">
-                        <i class="fa-solid fa-folder"></i>
+                        <i aria-hidden="true" class="fa-solid fa-folder"></i>
                         Topic
                     </label>
                     <div class="filter-select-wrapper">
@@ -170,13 +170,13 @@ class SearchPageManager {
                             <option value="">All Topics</option>
                             ${topicOptions}
                         </select>
-                        <i class="fa-solid fa-chevron-down filter-select-arrow"></i>
+                        <i aria-hidden="true" class="fa-solid fa-chevron-down filter-select-arrow"></i>
                     </div>
                 </div>
 
                 <div class="filter-group">
                     <label class="filter-label" for="tag-filter">
-                        <i class="fa-solid fa-tag"></i>
+                        <i aria-hidden="true" class="fa-solid fa-tag"></i>
                         Tag
                     </label>
                     <div class="filter-select-wrapper">
@@ -184,13 +184,13 @@ class SearchPageManager {
                             <option value="">All Tags</option>
                             ${tagOptions}
                         </select>
-                        <i class="fa-solid fa-chevron-down filter-select-arrow"></i>
+                        <i aria-hidden="true" class="fa-solid fa-chevron-down filter-select-arrow"></i>
                     </div>
                 </div>
 
                 <div class="filter-group">
                     <label class="filter-label" for="type-filter">
-                        <i class="fa-solid fa-file-lines"></i>
+                        <i aria-hidden="true" class="fa-solid fa-file-lines"></i>
                         Type
                     </label>
                     <div class="filter-select-wrapper">
@@ -198,7 +198,7 @@ class SearchPageManager {
                             <option value="">All Types</option>
                             ${typeOptions}
                         </select>
-                        <i class="fa-solid fa-chevron-down filter-select-arrow"></i>
+                        <i aria-hidden="true" class="fa-solid fa-chevron-down filter-select-arrow"></i>
                     </div>
                 </div>
 
@@ -260,7 +260,7 @@ class SearchPageManager {
             return `
                 <div class="filter-group">
                     <label class="filter-label" for="facet-${facetKey}-filter">
-                        <i class="${icon}"></i>
+                        <i aria-hidden="true" class="${icon}"></i>
                         ${this.formatFacetName(facetKey)}
                     </label>
                     <div class="filter-select-wrapper">
@@ -268,7 +268,7 @@ class SearchPageManager {
                             <option value="">All ${this.formatFacetName(facetKey)}</option>
                             ${options}
                         </select>
-                        <i class="fa-solid fa-chevron-down filter-select-arrow"></i>
+                        <i aria-hidden="true" class="fa-solid fa-chevron-down filter-select-arrow"></i>
                     </div>
                 </div>
             `;
@@ -506,7 +506,7 @@ class SearchPageManager {
                         <small class="text-muted">Active filters: </small>
                         ${activeMetadataFilters.map(filter => `<span class="active-filter-badge">${filter}</span>`).join(' ')}
                         <button class="btn btn-outline-secondary btn-sm ms-2" onclick="window.searchPageManager.clearMetadataFilters()">
-                            <i class="fa-solid fa-xmark"></i> Clear metadata filters
+                            <i aria-hidden="true" class="fa-solid fa-xmark"></i> Clear metadata filters
                         </button>
                     </div>
                 `;
@@ -799,7 +799,7 @@ class SearchPageManager {
                  data-result-index="${index}">
                 <div class="result-header d-flex align-items-start mb-2">
                     <div class="section-icon me-3">
-                        <i class="${sectionInfo.icon}"></i>
+                        <i aria-hidden="true" class="${sectionInfo.icon}"></i>
                     </div>
                     <div class="result-info flex-grow-1">
                         <h4 class="result-title mb-1">
@@ -997,14 +997,14 @@ class SearchPageManager {
                 <a href="${sectionUrl}" class="section-link d-flex align-items-center text-decoration-none mb-1 p-2 rounded">
                     <span class="section-icon me-2">${sectionIcon}</span>
                     <span class="section-text flex-grow-1">${sectionText}</span>
-                    <i class="fas fa-external-link-alt ms-2" style="font-size: 0.75rem;"></i>
+                    <i aria-hidden="true" class="fas fa-external-link-alt ms-2" style="font-size: 0.75rem;"></i>
                 </a>
             `;
         }).join('');
 
         const moreIndicator = hasMore ? `
             <div class="text-muted small mt-1 ms-4">
-                <i class="fas fa-ellipsis-h me-1"></i>
+                <i aria-hidden="true" class="fas fa-ellipsis-h me-1"></i>
                 +${result.matchingSections.length - 5} more sections
             </div>
         ` : '';
@@ -1012,7 +1012,7 @@ class SearchPageManager {
         return `
             <div class="matching-sections">
                 <h5 class="h6 mb-2">
-                    <i class="fas fa-list-ul me-1"></i>
+                    <i aria-hidden="true" class="fas fa-list-ul me-1"></i>
                     Matching sections:
                 </h5>
                 <div class="section-links border rounded p-2">
@@ -1026,15 +1026,15 @@ class SearchPageManager {
     getSectionIcon(type, level) {
         switch (type) {
             case 'title':
-                return '<i class="fas fa-file-lines"></i>';
+                return '<i aria-hidden="true" class="fas fa-file-lines"></i>';
             case 'heading':
-                if (level <= 2) return '<i class="fas fa-heading"></i>';
-                if (level <= 4) return '<i class="fas fa-heading text-muted"></i>';
-                return '<i class="fas fa-heading text-muted"></i>';
+                if (level <= 2) return '<i aria-hidden="true" class="fas fa-heading"></i>';
+                if (level <= 4) return '<i aria-hidden="true" class="fas fa-heading text-muted"></i>';
+                return '<i aria-hidden="true" class="fas fa-heading text-muted"></i>';
             case 'content':
-                return '<i class="fas fa-align-left text-muted"></i>';
+                return '<i aria-hidden="true" class="fas fa-align-left text-muted"></i>';
             default:
-                return '<i class="fas fa-circle-dot text-muted"></i>';
+                return '<i aria-hidden="true" class="fas fa-circle-dot text-muted"></i>';
         }
     }
 
@@ -1109,12 +1109,12 @@ class SearchPageManager {
     showEmptyState() {
         this.resultsContainer.innerHTML = `
             <div class="text-center py-4">
-                <i class="fas fa-search fa-2x mb-3 text-success"></i>
+                <i aria-hidden="true" class="fas fa-search fa-2x mb-3 text-success"></i>
                 <h4>Search Documentation</h4>
                 <p class="text-muted">Start typing to search across all documentation pages...</p>
                 <div class="mt-3">
                     <small class="text-muted">
-                        <i class="fas fa-lightbulb text-success"></i>
+                        <i aria-hidden="true" class="fas fa-lightbulb text-success"></i>
                         <strong>Search Tips:</strong> Use specific terms for better results • Use filters to narrow down results • Search includes titles, content, and headings
                     </small>
                 </div>
@@ -1125,7 +1125,7 @@ class SearchPageManager {
     showMinLengthMessage() {
         this.resultsContainer.innerHTML = `
             <div class="text-center py-4">
-                <i class="fas fa-keyboard fa-2x mb-3 text-muted"></i>
+                <i aria-hidden="true" class="fas fa-keyboard fa-2x mb-3 text-muted"></i>
                 <h4>Keep typing...</h4>
                 <p class="text-muted">Enter at least 2 characters to search</p>
             </div>
@@ -1142,7 +1142,7 @@ class SearchPageManager {
 
         this.resultsContainer.innerHTML = `
             <div class="no-results text-center py-4">
-                <i class="fas fa-search fa-2x mb-3 text-muted"></i>
+                <i aria-hidden="true" class="fas fa-search fa-2x mb-3 text-muted"></i>
                 <h4>No results found</h4>
                 <p class="text-muted">No results found for "${this.escapeHtml(this.currentQuery)}"${this.getActiveFiltersText()}</p>
                 <div class="mt-3">
@@ -1153,7 +1153,7 @@ class SearchPageManager {
                 ${filtersActive ? `
                     <div class="mt-3">
                         <button onclick="document.getElementById('clear-filters').click()" class="btn btn-outline-secondary btn-sm">
-                            <i class="fas fa-times"></i> Clear Filters
+                            <i aria-hidden="true" class="fas fa-times"></i> Clear Filters
                         </button>
                     </div>
                 ` : ''}

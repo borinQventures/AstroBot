@@ -244,7 +244,7 @@ class SearchInterface {
             <div class="enhanced-search-container">
                 <div class="enhanced-search-header">
                     <div class="enhanced-search-input-wrapper">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <i aria-hidden="true" class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input
                             type="text"
                             id="enhanced-search-input"
@@ -254,7 +254,7 @@ class SearchInterface {
                             aria-label="Search documentation"
                         >
                         <button class="enhanced-search-close" title="Close search" aria-label="Close search">
-                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                            <i aria-hidden="true" class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                     <div class="enhanced-search-stats"></div>
@@ -439,7 +439,7 @@ class SearchInterface {
         if (this.resultsContainer) {
             this.resultsContainer.innerHTML = `
                 <div class="search-empty-state">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <i aria-hidden="true" class="fa-solid fa-magnifying-glass"></i>
                     <p>Start typing to search documentation...</p>
                     <div class="search-tips">
                         <strong>Search tips:</strong>
@@ -461,7 +461,7 @@ class SearchInterface {
         if (this.resultsContainer) {
             this.resultsContainer.innerHTML = `
                 <div class="search-no-results">
-                    <i class="fa-solid fa-search-minus"></i>
+                    <i aria-hidden="true" class="fa-solid fa-search-minus"></i>
                     <p>No results found for "<strong>${this.escapeHtml(query)}</strong>"</p>
                     <div class="search-suggestions">
                         <strong>Try:</strong>
@@ -483,7 +483,7 @@ class SearchInterface {
         if (this.resultsContainer) {
             this.resultsContainer.innerHTML = `
                 <div class="search-error">
-                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <i aria-hidden="true" class="fa-solid fa-exclamation-triangle"></i>
                     <p>${this.escapeHtml(message)}</p>
                 </div>
             `;

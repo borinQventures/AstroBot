@@ -96,15 +96,15 @@ class Utils {
     getSectionIcon(type, level) {
         switch (type) {
             case 'title':
-                return '<i class="fa-solid fa-file-lines section-icon title-icon"></i>';
+                return '<i aria-hidden="true" class="fa-solid fa-file-lines section-icon title-icon"></i>';
             case 'heading':
-                if (level <= 2) return '<i class="fa-solid fa-heading section-icon h1-icon"></i>';
-                if (level <= 4) return '<i class="fa-solid fa-heading section-icon h2-icon"></i>';
-                return '<i class="fa-solid fa-heading section-icon h3-icon"></i>';
+                if (level <= 2) return '<i aria-hidden="true" class="fa-solid fa-heading section-icon h1-icon"></i>';
+                if (level <= 4) return '<i aria-hidden="true" class="fa-solid fa-heading section-icon h2-icon"></i>';
+                return '<i aria-hidden="true" class="fa-solid fa-heading section-icon h3-icon"></i>';
             case 'content':
-                return '<i class="fa-solid fa-align-left section-icon content-icon"></i>';
+                return '<i aria-hidden="true" class="fa-solid fa-align-left section-icon content-icon"></i>';
             default:
-                return '<i class="fa-solid fa-circle section-icon"></i>';
+                return '<i aria-hidden="true" class="fa-solid fa-circle section-icon"></i>';
         }
     }
 
