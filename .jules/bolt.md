@@ -1,0 +1,3 @@
+## 2026-06-26 - Optimize collectSymlinkPaths by using withFileTypes
+**Learning:** During large sandbox workspace evaluation, repeatedly calling `lstatSync()` on string entry names inside a loop creates significant IO bottlenecks because an additional system call is required per entry. By switching `readdirSync(path)` to `readdirSync(path, { withFileTypes: true })`, we can process entries as `fs.Dirent` objects which already contain type information (`isDirectory`, `isSymbolicLink`), effectively eliminating an `lstatSync` call per file.
+**Action:** Use `readdirSync(..., { withFileTypes: true })` by default when exploring files recursively to save IO operations.
