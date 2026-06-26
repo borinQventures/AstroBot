@@ -1,0 +1,4 @@
+## 2025-02-27 - Command Injection via exec in OpenShell CLI calls
+**Vulnerability:** Found uses of `exec()` (promisified to `execAsync()`) in `logs.ts` and `status.ts` executing `openshell` commands where untrusted input like `sandboxName` was concatenated directly into the shell string. This allowed for potential command injection via the sandboxName argument.
+**Learning:** Calling `openshell` binary functions must avoid utilizing `exec()` which creates a shell environment prone to input manipulation. The codebase lacked the usage of `execFile()` for secure execution of binaries when arguments contain arbitrary strings.
+**Prevention:** Replaced uses of `exec()` with `execFile()` using an array of arguments, thereby securely passing options to the child process without exposing them to shell interpretation. Any CLI wrappers must enforce array-based argument passing (e.g., `execFile` or `spawn`) instead of raw string execution via `exec`.
