@@ -16,7 +16,7 @@ vi.mock("node:fs", () => ({
 
 // Mock node:child_process — controls openshell command results
 vi.mock("node:child_process", () => ({
-  exec: vi.fn(),
+  execFile: vi.fn(),
 }));
 
 // Mock state loader — controls plugin state
@@ -26,7 +26,7 @@ vi.mock("../blueprint/state.js", () => ({
 
 // Import after mocks are set up
 const { existsSync } = await import("node:fs");
-const { exec } = await import("node:child_process");
+const { execFile } = await import("node:child_process");
 const { loadState } = await import("../blueprint/state.js");
 const { cliStatus } = await import("./status.js");
 
@@ -82,18 +82,20 @@ function captureLogger(): { lines: string[]; logger: PluginLogger } {
 }
 
 /**
- * Make the exec mock resolve with the given stdout, or reject if error is set.
+ * Make the execFile mock resolve with the given stdout, or reject if error is set.
  * Routes by command substring so sandbox and inference calls can differ.
  */
 function mockExec(responses: Record<string, string | Error>): void {
-  vi.mocked(exec).mockImplementation(((
-    cmd: string,
+  vi.mocked(execFile).mockImplementation(((
+    file: string,
+    args: string[],
     _opts: unknown,
     callback?: (err: Error | null, result: { stdout: string; stderr: string }) => void,
   ) => {
-    // promisify(exec)(cmd, opts) calls exec(cmd, opts, callback)
+    // promisify(execFile)(file, args, opts) calls execFile(file, args, opts, callback)
+    const cmdStr = [file, ...args].join(" ");
     for (const [substring, response] of Object.entries(responses)) {
-      if (cmd.includes(substring)) {
+      if (cmdStr.includes(substring)) {
         if (response instanceof Error) {
           callback?.(response, { stdout: "", stderr: response.message });
         } else {
@@ -103,8 +105,8 @@ function mockExec(responses: Record<string, string | Error>): void {
       }
     }
     // Default: command not found
-    callback?.(new Error(`command not found: ${cmd}`), { stdout: "", stderr: "" });
-  }) as typeof exec);
+    callback?.(new Error(`command not found: ${cmdStr}`), { stdout: "", stderr: "" });
+  }) as typeof execFile);
 }
 
 // ---------------------------------------------------------------------------
@@ -291,7 +293,7 @@ describe("cliStatus", () => {
 
       await cliStatus({ json: false, logger, pluginConfig: defaultConfig });
 
-      expect(exec).not.toHaveBeenCalled();
+      expect(execFile).not.toHaveBeenCalled();
     });
 
     it("JSON output has insideSandbox: true everywhere", async () => {
@@ -352,9 +354,7 @@ describe("cliStatus", () => {
       expect(data.nemoclaw.lastAction).toBe("migrate");
       expect(data.nemoclaw.blueprintVersion).toBe("0.1.0");
       expect(data.nemoclaw.lastRunId).toBe("run-a1b2c3d4");
-      expect(data.nemoclaw.migrationSnapshot).toBe(
-        "/root/.nemoclaw/snapshots/pre-migrate.tar.gz",
-      );
+      expect(data.nemoclaw.migrationSnapshot).toBe("/root/.nemoclaw/snapshots/pre-migrate.tar.gz");
     });
   });
 
@@ -378,9 +378,10 @@ describe("cliStatus", () => {
       const output = lines.join("\n");
       expect(output).toContain("Name:    custom-sandbox");
 
-      // Verify the exec call used the custom sandbox name
-      expect(exec).toHaveBeenCalledWith(
-        expect.stringContaining("custom-sandbox"),
+      // Verify the execFile call used the custom sandbox name
+      expect(execFile).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.arrayContaining(["custom-sandbox"]),
         expect.anything(),
         expect.anything(),
       );
@@ -395,9 +396,10 @@ describe("cliStatus", () => {
       const { lines, logger } = captureLogger();
       await cliStatus({ json: true, logger, pluginConfig: defaultConfig });
 
-      // Verify exec was called with default name
-      expect(exec).toHaveBeenCalledWith(
-        expect.stringContaining("openclaw"),
+      // Verify execFile was called with default name
+      expect(execFile).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.arrayContaining(["openclaw"]),
         expect.anything(),
         expect.anything(),
       );
