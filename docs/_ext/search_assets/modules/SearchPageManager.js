@@ -154,8 +154,8 @@ class SearchPageManager {
                     <span class="filter-header-title">Filters</span>
                     ${activeCount > 0 ? `<span class="active-filter-count">${activeCount}</span>` : ''}
                 </div>
-                <button id="clear-filters" class="filter-clear-btn ${activeCount === 0 ? 'hidden' : ''}" aria-label="Clear all filters">
-                    <i class="fa-solid fa-xmark"></i>
+                <button id="clear-filters" class="filter-clear-btn ${activeCount === 0 ? 'hidden' : ''}" aria-label="Clear all filters" ${activeCount === 0 ? 'disabled' : ''}>
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                     <span>Clear all</span>
                 </button>
             </div>
@@ -234,6 +234,7 @@ class SearchPageManager {
 
         if (clearBtn) {
             clearBtn.classList.toggle('hidden', activeCount === 0);
+            clearBtn.disabled = activeCount === 0;
         }
 
         // Update select wrappers with active state
@@ -506,7 +507,7 @@ class SearchPageManager {
                         <small class="text-muted">Active filters: </small>
                         ${activeMetadataFilters.map(filter => `<span class="active-filter-badge">${filter}</span>`).join(' ')}
                         <button class="btn btn-outline-secondary btn-sm ms-2" onclick="window.searchPageManager.clearMetadataFilters()">
-                            <i class="fa-solid fa-xmark"></i> Clear metadata filters
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i> Clear metadata filters
                         </button>
                     </div>
                 `;
@@ -1109,12 +1110,12 @@ class SearchPageManager {
     showEmptyState() {
         this.resultsContainer.innerHTML = `
             <div class="text-center py-4">
-                <i class="fas fa-search fa-2x mb-3 text-success"></i>
+                <i class="fas fa-search fa-2x mb-3 text-success" aria-hidden="true"></i>
                 <h4>Search Documentation</h4>
                 <p class="text-muted">Start typing to search across all documentation pages...</p>
                 <div class="mt-3">
                     <small class="text-muted">
-                        <i class="fas fa-lightbulb text-success"></i>
+                        <i class="fas fa-lightbulb text-success" aria-hidden="true"></i>
                         <strong>Search Tips:</strong> Use specific terms for better results • Use filters to narrow down results • Search includes titles, content, and headings
                     </small>
                 </div>
@@ -1125,7 +1126,7 @@ class SearchPageManager {
     showMinLengthMessage() {
         this.resultsContainer.innerHTML = `
             <div class="text-center py-4">
-                <i class="fas fa-keyboard fa-2x mb-3 text-muted"></i>
+                <i class="fas fa-keyboard fa-2x mb-3 text-muted" aria-hidden="true"></i>
                 <h4>Keep typing...</h4>
                 <p class="text-muted">Enter at least 2 characters to search</p>
             </div>
@@ -1142,7 +1143,7 @@ class SearchPageManager {
 
         this.resultsContainer.innerHTML = `
             <div class="no-results text-center py-4">
-                <i class="fas fa-search fa-2x mb-3 text-muted"></i>
+                <i class="fas fa-search fa-2x mb-3 text-muted" aria-hidden="true"></i>
                 <h4>No results found</h4>
                 <p class="text-muted">No results found for "${this.escapeHtml(this.currentQuery)}"${this.getActiveFiltersText()}</p>
                 <div class="mt-3">
@@ -1153,7 +1154,7 @@ class SearchPageManager {
                 ${filtersActive ? `
                     <div class="mt-3">
                         <button onclick="document.getElementById('clear-filters').click()" class="btn btn-outline-secondary btn-sm">
-                            <i class="fas fa-times"></i> Clear Filters
+                            <i class="fas fa-times" aria-hidden="true"></i> Clear Filters
                         </button>
                     </div>
                 ` : ''}
