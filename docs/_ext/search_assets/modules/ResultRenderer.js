@@ -236,8 +236,8 @@ class ResultRenderer {
     renderLoading(container) {
         if (container) {
             container.innerHTML = `
-                <div class="search-loading">
-                    <i class="fa-solid fa-spinner fa-spin"></i>
+                <div class="search-loading" role="status" aria-live="polite">
+                    <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
                     <p>Searching...</p>
                 </div>
             `;
