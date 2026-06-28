@@ -78,26 +78,34 @@ function loadConfigDocument(configPath) {
 }
 function collectSymlinkPaths(rootPath) {
     const symlinks = [];
-    function walk(currentPath, relativePath) {
-        const stat = (0, node_fs_1.lstatSync)(currentPath);
-        if (stat.isSymbolicLink()) {
-            symlinks.push(relativePath || ".");
-            return;
-        }
-        if (!stat.isDirectory()) {
-            return;
-        }
-        for (const entry of (0, node_fs_1.readdirSync)(currentPath)) {
-            const nextPath = node_path_1.default.join(currentPath, entry);
-            const nextRelative = relativePath ? node_path_1.default.join(relativePath, entry) : entry;
-            walk(nextPath, nextRelative);
+    // ⚡ Bolt: Use withFileTypes to avoid lstatSync per file during directory traversal
+    function walkDir(dirPath, relativeDir) {
+        const entries = (0, node_fs_1.readdirSync)(dirPath, { withFileTypes: true });
+        for (const entry of entries) {
+            const nextRelative = relativeDir ? node_path_1.default.join(relativeDir, entry.name) : entry.name;
+            if (entry.isSymbolicLink()) {
+                symlinks.push(nextRelative);
+            }
+            else if (entry.isDirectory()) {
+                const nextPath = node_path_1.default.join(dirPath, entry.name);
+                walkDir(nextPath, nextRelative);
+            }
         }
     }
-    walk(rootPath, "");
+    const rootStat = (0, node_fs_1.lstatSync)(rootPath);
+    if (rootStat.isSymbolicLink()) {
+        symlinks.push(".");
+    }
+    else if (rootStat.isDirectory()) {
+        walkDir(rootPath, "");
+    }
     return symlinks.sort();
 }
 function slugify(input) {
-    const slug = input.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const slug = input
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
     return slug || "root";
 }
 function registerRoot(rootMap, params) {
@@ -301,7 +309,9 @@ function detectHostOpenClaw(env = process.env) {
     const extensionsDir = (0, node_fs_1.existsSync)(node_path_1.default.join(stateDir, "extensions"))
         ? node_path_1.default.join(stateDir, "extensions")
         : null;
-    const skillsDir = (0, node_fs_1.existsSync)(node_path_1.default.join(stateDir, "skills")) ? node_path_1.default.join(stateDir, "skills") : null;
+    const skillsDir = (0, node_fs_1.existsSync)(node_path_1.default.join(stateDir, "skills"))
+        ? node_path_1.default.join(stateDir, "skills")
+        : null;
     const hooksDir = (0, node_fs_1.existsSync)(node_path_1.default.join(stateDir, "hooks")) ? node_path_1.default.join(stateDir, "hooks") : null;
     if ((0, node_fs_1.existsSync)(workspaceDir)) {
         try {
@@ -393,7 +403,7 @@ function prepareSandboxState(snapshotDir, manifest) {
     (0, node_fs_1.mkdirSync)(node_path_1.default.dirname(preparedStateDir), { recursive: true });
     copyDirectory(node_path_1.default.join(snapshotDir, "openclaw"), preparedStateDir);
     const configSourcePath = resolveConfigSourcePath(manifest, snapshotDir);
-    const config = (0, node_fs_1.existsSync)(configSourcePath) ? loadConfigDocument(configSourcePath) ?? {} : {};
+    const config = (0, node_fs_1.existsSync)(configSourcePath) ? (loadConfigDocument(configSourcePath) ?? {}) : {};
     for (const root of manifest.externalRoots) {
         for (const binding of root.bindings) {
             setConfigValue(config, binding.configPath, root.sandboxPath);

@@ -11,9 +11,15 @@ async function promptInput(question, defaultValue) {
     const rl = (0, promises_1.createInterface)({ input: node_process_1.stdin, output: node_process_1.stdout });
     const suffix = defaultValue ? ` [${defaultValue}]` : "";
     try {
-        const answer = await rl.question(`${question}${suffix}: `);
-        const trimmed = answer.trim();
-        return trimmed || defaultValue || "";
+        for (;;) {
+            const answer = await rl.question(`${question}${suffix}: `);
+            const trimmed = answer.trim();
+            if (trimmed)
+                return trimmed;
+            if (defaultValue)
+                return defaultValue;
+            console.log("  A value is required. Please try again.");
+        }
     }
     finally {
         rl.close();
