@@ -1,0 +1,3 @@
+## 2025-06-29 - Optimize collectSymlinkPaths with readdirSync withFileTypes
+**Learning:** In deep/large directory structures like OpenClaw workspaces, recursively calling `lstatSync` on every single file to check if it's a symlink incurs significant system call overhead. `fs.readdirSync(..., { withFileTypes: true })` provides `Dirent` objects which already include `isSymbolicLink()` and `isDirectory()` methods, eliminating the O(N) system calls per directory.
+**Action:** When scanning directories to find specific file types (like symlinks or directories), default to using `readdirSync(..., { withFileTypes: true })` instead of combining `readdirSync` with subsequent `statSync`/`lstatSync` calls for every entry.
