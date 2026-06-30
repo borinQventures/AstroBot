@@ -97,7 +97,7 @@ class SearchPageManager {
         const searchInputWrapper = document.createElement('div');
         searchInputWrapper.className = 'search-input-wrapper';
         searchInputWrapper.innerHTML = `
-            <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+            <i class="fa-solid fa-magnifying-glass search-input-icon" aria-hidden="true"></i>
         `;
         this.searchInput.parentNode.insertBefore(searchInputWrapper, this.searchInput);
         searchInputWrapper.appendChild(this.searchInput);
@@ -154,8 +154,8 @@ class SearchPageManager {
                     <span class="filter-header-title">Filters</span>
                     ${activeCount > 0 ? `<span class="active-filter-count">${activeCount}</span>` : ''}
                 </div>
-                <button id="clear-filters" class="filter-clear-btn ${activeCount === 0 ? 'hidden' : ''}" aria-label="Clear all filters">
-                    <i class="fa-solid fa-xmark"></i>
+                <button id="clear-filters" class="filter-clear-btn ${activeCount === 0 ? 'hidden' : ''}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                     <span>Clear all</span>
                 </button>
             </div>
@@ -506,7 +506,7 @@ class SearchPageManager {
                         <small class="text-muted">Active filters: </small>
                         ${activeMetadataFilters.map(filter => `<span class="active-filter-badge">${filter}</span>`).join(' ')}
                         <button class="btn btn-outline-secondary btn-sm ms-2" onclick="window.searchPageManager.clearMetadataFilters()">
-                            <i class="fa-solid fa-xmark"></i> Clear metadata filters
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i> Clear metadata filters
                         </button>
                     </div>
                 `;
@@ -1153,7 +1153,7 @@ class SearchPageManager {
                 ${filtersActive ? `
                     <div class="mt-3">
                         <button onclick="document.getElementById('clear-filters').click()" class="btn btn-outline-secondary btn-sm">
-                            <i class="fas fa-times"></i> Clear Filters
+                            <i class="fas fa-times" aria-hidden="true"></i> Clear Filters
                         </button>
                     </div>
                 ` : ''}
