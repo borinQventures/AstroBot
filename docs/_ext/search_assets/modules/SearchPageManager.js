@@ -154,8 +154,8 @@ class SearchPageManager {
                     <span class="filter-header-title">Filters</span>
                     ${activeCount > 0 ? `<span class="active-filter-count">${activeCount}</span>` : ''}
                 </div>
-                <button id="clear-filters" class="filter-clear-btn ${activeCount === 0 ? 'hidden' : ''}" aria-label="Clear all filters">
-                    <i class="fa-solid fa-xmark"></i>
+                <button id="clear-filters" class="filter-clear-btn ${activeCount === 0 ? 'hidden' : ''}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                     <span>Clear all</span>
                 </button>
             </div>
