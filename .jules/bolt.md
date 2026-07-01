@@ -1,0 +1,3 @@
+## 2026-07-01 - Optimizing recursive directory traversal in Node.js
+**Learning:** `fs.readdirSync` without `{ withFileTypes: true }` requires subsequent calls to `fs.lstatSync` (or `statSync`) to determine file types (like directories or symbolic links). In deep or large directory trees (like a workspace), executing synchronous stat calls for every file adds significant I/O overhead.
+**Action:** Use `{ withFileTypes: true }` when calling `fs.readdirSync` (and `fs.readdir`). This returns `fs.Dirent` objects which have `.isDirectory()` and `.isSymbolicLink()` methods built-in, completely eliminating the need for separate stat calls for each file and significantly speeding up file tree traversal.
