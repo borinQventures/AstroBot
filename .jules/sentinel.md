@@ -1,0 +1,4 @@
+## 2025-01-20 - [Command Injection Prevention]
+**Vulnerability:** Found `exec` from `node:child_process` being used with string concatenation that included unsanitized variables (like `sandboxName`).
+**Learning:** Using `exec` with variable arguments can lead to command injection if the arguments contain shell metacharacters.
+**Prevention:** Always use `execFile` (or `spawn`) and their promisified variants over `exec` when executing system binaries with variable arguments, as they pass arguments in an array without executing a shell (by default), significantly mitigating command injection risks.
