@@ -16,7 +16,7 @@ vi.mock("node:fs", () => ({
 
 // Mock node:child_process — controls openshell command results
 vi.mock("node:child_process", () => ({
-  exec: vi.fn(),
+  execFile: vi.fn(),
 }));
 
 // Mock state loader — controls plugin state
@@ -26,7 +26,7 @@ vi.mock("../blueprint/state.js", () => ({
 
 // Import after mocks are set up
 const { existsSync } = await import("node:fs");
-const { exec } = await import("node:child_process");
+const { execFile } = await import("node:child_process");
 const { loadState } = await import("../blueprint/state.js");
 const { cliStatus } = await import("./status.js");
 
@@ -86,14 +86,17 @@ function captureLogger(): { lines: string[]; logger: PluginLogger } {
  * Routes by command substring so sandbox and inference calls can differ.
  */
 function mockExec(responses: Record<string, string | Error>): void {
-  vi.mocked(exec).mockImplementation(((
+  vi.mocked(execFile).mockImplementation(((
     cmd: string,
+    args: string[] | null | undefined,
     _opts: unknown,
     callback?: (err: Error | null, result: { stdout: string; stderr: string }) => void,
   ) => {
-    // promisify(exec)(cmd, opts) calls exec(cmd, opts, callback)
+    // Determine the full command for substring matching based on execFile signature
+    const fullCmd = Array.isArray(args) ? `${cmd} ${args.join(" ")}` : cmd;
+
     for (const [substring, response] of Object.entries(responses)) {
-      if (cmd.includes(substring)) {
+      if (fullCmd.includes(substring)) {
         if (response instanceof Error) {
           callback?.(response, { stdout: "", stderr: response.message });
         } else {
@@ -103,8 +106,8 @@ function mockExec(responses: Record<string, string | Error>): void {
       }
     }
     // Default: command not found
-    callback?.(new Error(`command not found: ${cmd}`), { stdout: "", stderr: "" });
-  }) as typeof exec);
+    callback?.(new Error(`command not found: ${fullCmd}`), { stdout: "", stderr: "" });
+  }) as typeof execFile);
 }
 
 // ---------------------------------------------------------------------------
@@ -291,7 +294,7 @@ describe("cliStatus", () => {
 
       await cliStatus({ json: false, logger, pluginConfig: defaultConfig });
 
-      expect(exec).not.toHaveBeenCalled();
+      expect(execFile).not.toHaveBeenCalled();
     });
 
     it("JSON output has insideSandbox: true everywhere", async () => {
@@ -379,8 +382,9 @@ describe("cliStatus", () => {
       expect(output).toContain("Name:    custom-sandbox");
 
       // Verify the exec call used the custom sandbox name
-      expect(exec).toHaveBeenCalledWith(
-        expect.stringContaining("custom-sandbox"),
+      expect(execFile).toHaveBeenCalledWith(
+        "openshell",
+        expect.arrayContaining(["custom-sandbox"]),
         expect.anything(),
         expect.anything(),
       );
@@ -396,8 +400,9 @@ describe("cliStatus", () => {
       await cliStatus({ json: true, logger, pluginConfig: defaultConfig });
 
       // Verify exec was called with default name
-      expect(exec).toHaveBeenCalledWith(
-        expect.stringContaining("openclaw"),
+      expect(execFile).toHaveBeenCalledWith(
+        "openshell",
+        expect.arrayContaining(["openclaw"]),
         expect.anything(),
         expect.anything(),
       );
